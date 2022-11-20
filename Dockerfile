@@ -1,7 +1,21 @@
-FROM golang:1.19.3-alpine
+# syntax=docker/dockerfile:1
+
+## Build
+FROM golang:1.19.3-alpine AS build
 
 WORKDIR /app
 
-COPY main.go ./
+COPY go.mod .
 
-CMD [ "go","run","main.go" ]
+COPY main.go .
+
+RUN go build -o goexample.exe .
+
+## Deploy
+FROM alpine
+
+WORKDIR /app 
+
+COPY --from=build /app .
+
+CMD ["./goexample.exe"]
